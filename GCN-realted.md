@@ -1,5 +1,5 @@
 ### GCN
-![avatar](./src/pic/GCN-schematic.png "GCN原理图")
+![avatar](./src/pic/GCN-schematic.png)
 <center>GCN原理图</center>
 
 给定一个图，$G = (V, A)$，V是顶点集，A是邻接矩阵（对称阵）。用D表示图G的度矩阵，$D=diag(d_1,\cdots,d_n)$。用$H^{(i)}$表示图卷积中的结点特征。
@@ -22,3 +22,14 @@ $$H^{(k)} \leftarrow ReLU(\tilde{H^{(k)}} \theta^{(k)})$$
 ##### 分类器：
 $$Y_{GCN} = softmax(SH^{(k-1)} \theta^{(k)})$$
 
+### Simple Graph Convolution
+它认为图卷积GCN和多层感知机MLP类似，只不过每一层当中对特征按照其近邻进行了平均化。这篇文章认为图卷积受目前普通卷积神经网络的影响，一开始就加入了非线性变换，还把网络层数搞得很深，于是他们把图卷积进行了简化，去掉了非线性激活，把图卷积网络改成了一个逻辑回归，在某些数据上表现不错。
+![avatar](./src/pic/Simple-GCN-schematic.png)
+<center>Simple-GCN原理图</center>
+
+##### 图卷积的线性化：
+$$Y = softmax(S\dots SSX \theta^{(1)}\dots \theta^{(k)})$$ 所有的S都是一样的，可以用$S^K$表示。然后后面的所有变换矩阵乘起来变成了一个矩阵$\theta = \theta^{(1)}\dots \theta^{(k)}$。
+然后就变成了一个多分类的逻辑回归：
+$$Y = softmax(S^K X \theta)$$
+$S^K$可以在预处理阶段就可完成，因为需要用到的东西都是已知的。这样，
+$$\tilde{X} = S^K X$$ 然后$softmax(\tilde{X} \theta)$就变成了单纯的多分类逻辑回归。优化可以直接利用逻辑回归的优化方法，如随机梯度下降（SGD）等。
