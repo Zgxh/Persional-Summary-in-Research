@@ -1,2 +1,2 @@
 # GCN-related
-Record my learning process of Graph Convolutional Networks.
+To record my learning process of Graph Convolutional Networks.
