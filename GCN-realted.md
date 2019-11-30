@@ -33,3 +33,10 @@ $$Y = softmax(S\dots SSX \theta^{(1)}\dots \theta^{(k)})$$ 所有的S都是一�
 $$Y = softmax(S^K X \theta)$$
 $S^K$可以在预处理阶段就可完成，因为需要用到的东西都是已知的。这样，
 $$\tilde{X} = S^K X$$ 然后$softmax(\tilde{X} \theta)$就变成了单纯的多分类逻辑回归。优化可以直接利用逻辑回归的优化方法，如随机梯度下降（SGD）等。
+
+#### 更多细节：
+##### 一阶切比雪夫滤波器加入自环：
+GCN中初始的first-order Chebyshev filter是：$S_{1-order} = I + D^{-1/2}AD^{-1/2}$，归一化的拉普拉斯矩阵：$\Delta_{sym} = I - D^{-1/2}AD^{-1/2}$，所以一阶切比雪夫滤波器变成：$S_{1-order} = 2I - \Delta_{sym}$。然后对于$S^K_{1-order}$，滤波系数是$g_i = (2 - \lambda_i)^K$,当$\lambda < 1$时随着K增加系数爆炸式增长，不好！
+然后采用了【再归一化】，$S = \tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}$,A和D分别是加了自环(self-loops)后的邻接矩阵和度矩阵，然后现在的拉普拉斯矩阵就变成了$\tilde{D}_{sym} = I - \tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}$，滤波器系数变为$g_i = (1 - \tilde{\lambda}_i)^K$,性能变好了！
+
+
